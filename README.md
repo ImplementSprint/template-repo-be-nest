@@ -15,7 +15,7 @@ Backend template with CI/CD pipeline that calls reusable workflows from **Centra
 ## Project Structure
 
 ```
-Template_Repo_Backend/
+Template-repo-be-single/
 ├── src/
 │   ├── main.ts                    # Application entry point
 │   ├── app.module.ts              # Root module
