@@ -282,7 +282,7 @@ All new feature modules must pass `npm run typecheck` with zero errors. Use type
 
 ## Integrating Into an Existing Tribe Backend
 
-If your tribe already has a NestJS backend, bring these layers across:
+If your tribe already has the NestJS backend, bring these layers across:
 
 1. **Copy the common layer** — `src/common/` (filters, middleware, security config, env validation)
 2. **Copy the modules** — `src/supabase/`, `src/api-center/`, `src/health/`
