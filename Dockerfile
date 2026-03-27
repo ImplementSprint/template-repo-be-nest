@@ -18,12 +18,11 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Security: create non-root user before copying application files so that
-# --chown can assign correct ownership at copy time rather than after.
-RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nestjs
+# Pull patched alpine package for CVE-2026-22184 before app install.
+RUN apk upgrade --no-cache zlib \
+  && npm ci --omit=dev \
+  && addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nestjs
 
 COPY --chown=nestjs:nodejs --from=builder /app/dist ./dist
 
