@@ -84,6 +84,11 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "src/main.ts",
+      "\\.module\\.ts$"
+    ],
     "coverageDirectory": "../coverage",
     "coverageReporters": ["json-summary", "text", "lcov"],
     "reporters": [
