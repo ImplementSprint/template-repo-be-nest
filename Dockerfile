@@ -19,7 +19,9 @@ WORKDIR /app
 
 COPY package*.json ./
 # Pull patched alpine package for CVE-2026-22184 before app install.
+# Upgrade npm itself to pull in picomatch >= 4.0.4, fixing CVE-2026-33671 (ReDoS HIGH).
 RUN apk upgrade --no-cache zlib \
+  && npm install -g npm@latest \
   && npm ci --omit=dev \
   && rm package-lock.json \
   && addgroup --system --gid 1001 nodejs \
