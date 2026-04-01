@@ -1,26 +1,77 @@
 import { Test } from '@nestjs/testing';
 import type { TestingModule } from '@nestjs/testing';
-import { HealthService } from './health.service';
+import { HealthService } from './health.service.js';
+import { SupabaseService } from '../supabase/supabase.service.js';
+import { ApiCenterSdkService } from '../api-center/api-center-sdk.service.js';
+
+const makeSupabaseMock = (pingResult: boolean): Partial<SupabaseService> => ({
+  ping: jest.fn().mockResolvedValue(pingResult),
+});
+
+const makeApiCenterMock = (
+  pingResult: boolean,
+): Partial<ApiCenterSdkService> => ({
+  ping: jest.fn().mockResolvedValue(pingResult),
+});
 
 describe('HealthService', () => {
-  let service: HealthService;
-
-  beforeEach(async () => {
+  async function createService(
+    dbPing: boolean,
+    apiPing: boolean,
+  ): Promise<HealthService> {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HealthService],
+      providers: [
+        HealthService,
+        { provide: SupabaseService, useValue: makeSupabaseMock(dbPing) },
+        {
+          provide: ApiCenterSdkService,
+          useValue: makeApiCenterMock(apiPing),
+        },
+      ],
     }).compile();
 
-    service = module.get<HealthService>(HealthService);
-  });
+    return module.get<HealthService>(HealthService);
+  }
 
-  it('should be defined', () => {
+  it('should be defined', async () => {
+    const service = await createService(true, true);
     expect(service).toBeDefined();
   });
 
-  it('should return an ok status payload', () => {
-    const status = service.getStatus();
+  it('returns ok when both checks pass', async () => {
+    const service = await createService(true, true);
+    const result = await service.getStatus();
 
-    expect(status.status).toBe('ok');
-    expect(status.uptimeSeconds).toBeGreaterThanOrEqual(0);
+    expect(result.status).toBe('ok');
+    expect(result.checks.database).toBe(true);
+    expect(result.checks.apiCenter).toBe(true);
+    expect(result.uptimeSeconds).toBeGreaterThanOrEqual(0);
+  });
+
+  it('returns degraded when database fails but apiCenter passes', async () => {
+    const service = await createService(false, true);
+    const result = await service.getStatus();
+
+    expect(result.status).toBe('degraded');
+    expect(result.checks.database).toBe(false);
+    expect(result.checks.apiCenter).toBe(true);
+  });
+
+  it('returns degraded when apiCenter fails but database passes', async () => {
+    const service = await createService(true, false);
+    const result = await service.getStatus();
+
+    expect(result.status).toBe('degraded');
+    expect(result.checks.database).toBe(true);
+    expect(result.checks.apiCenter).toBe(false);
+  });
+
+  it('returns error when both checks fail', async () => {
+    const service = await createService(false, false);
+    const result = await service.getStatus();
+
+    expect(result.status).toBe('error');
+    expect(result.checks.database).toBe(false);
+    expect(result.checks.apiCenter).toBe(false);
   });
 });

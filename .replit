@@ -1,0 +1,25 @@
+# Replit configuration — pre-production preview only (test branch)
+# This environment is NOT used for UAT or production.
+# UAT and production run on Kubernetes (AWS EKS).
+
+modules = ["nodejs-22"]
+
+# Build the TypeScript output before starting the process.
+# start:prod runs `node dist/main` which requires a compiled dist/ directory.
+# npm is used intentionally here: pnpm requires additional Nix configuration that is not set up in replit.nix.
+run = "npm run build && npm run start:prod"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+# Cloud Run is Replit's managed serverless deployment target.
+# On every deploy Replit will execute the run command above from a clean workspace.
+deploymentTarget = "cloudrun"
+run = ["sh", "-c", "npm run build && npm run start:prod"]
+
+[[ports]]
+# Map the application's internal port to Replit's standard HTTP port.
+# PORT env var (set via Replit Secrets) must match localPort.
+localPort = 3000
+externalPort = 80

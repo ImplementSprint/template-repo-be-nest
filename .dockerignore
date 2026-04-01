@@ -13,4 +13,5 @@ yarn-error.log*
 .env.*
 !.env.example
 test
+tests
 README.md

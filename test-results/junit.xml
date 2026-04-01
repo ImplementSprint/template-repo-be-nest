@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="126" failures="0" errors="0" time="7.707">
+  <testsuite name="BODY_SIZE_LIMIT" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="2.43" tests="32">
+    <testcase classname="BODY_SIZE_LIMIT is defined" name="BODY_SIZE_LIMIT is defined" time="0.018">
+    </testcase>
+    <testcase classname="BODY_SIZE_LIMIT equals &quot;5mb&quot;" name="BODY_SIZE_LIMIT equals &quot;5mb&quot;" time="0">
+    </testcase>
+    <testcase classname="helmetConfig is defined" name="helmetConfig is defined" time="0">
+    </testcase>
+    <testcase classname="helmetConfig has contentSecurityPolicy with defaultSrc self-only" name="helmetConfig has contentSecurityPolicy with defaultSrc self-only" time="0.002">
+    </testcase>
+    <testcase classname="helmetConfig has scriptSrc restricted to self" name="helmetConfig has scriptSrc restricted to self" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfig has frameAncestors set to none (clickjacking protection)" name="helmetConfig has frameAncestors set to none (clickjacking protection)" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfig has objectSrc set to none" name="helmetConfig has objectSrc set to none" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfig has hsts maxAge of 1 year (31536000)" name="helmetConfig has hsts maxAge of 1 year (31536000)" time="0">
+    </testcase>
+    <testcase classname="helmetConfig has hsts includeSubDomains enabled" name="helmetConfig has hsts includeSubDomains enabled" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfig has hsts preload enabled" name="helmetConfig has hsts preload enabled" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfig has noSniff enabled" name="helmetConfig has noSniff enabled" time="0">
+    </testcase>
+    <testcase classname="helmetConfig has referrerPolicy set to no-referrer" name="helmetConfig has referrerPolicy set to no-referrer" time="0">
+    </testcase>
+    <testcase classname="helmetConfig has frameguard disabled (using CSP frame-ancestors instead)" name="helmetConfig has frameguard disabled (using CSP frame-ancestors instead)" time="0">
+    </testcase>
+    <testcase classname="helmetConfigSwagger is defined" name="helmetConfigSwagger is defined" time="0">
+    </testcase>
+    <testcase classname="helmetConfigSwagger allows unsafe-inline scripts (required by Swagger UI)" name="helmetConfigSwagger allows unsafe-inline scripts (required by Swagger UI)" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfigSwagger allows unsafe-inline styles (required by Swagger UI)" name="helmetConfigSwagger allows unsafe-inline styles (required by Swagger UI)" time="0">
+    </testcase>
+    <testcase classname="helmetConfigSwagger still enforces frameAncestors none" name="helmetConfigSwagger still enforces frameAncestors none" time="0.001">
+    </testcase>
+    <testcase classname="helmetConfigSwagger still has hsts enabled" name="helmetConfigSwagger still has hsts enabled" time="0">
+    </testcase>
+    <testcase classname="helmetConfigSwagger still has noSniff enabled" name="helmetConfigSwagger still has noSniff enabled" time="0">
+    </testcase>
+    <testcase classname="corsOptions allows a whitelisted origin" name="corsOptions allows a whitelisted origin" time="0.001">
+    </testcase>
+    <testcase classname="corsOptions allows a second whitelisted origin" name="corsOptions allows a second whitelisted origin" time="0">
+    </testcase>
+    <testcase classname="corsOptions rejects an origin not in the whitelist" name="corsOptions rejects an origin not in the whitelist" time="0.002">
+    </testcase>
+    <testcase classname="corsOptions allows requests with no origin (server-to-server / health probes)" name="corsOptions allows requests with no origin (server-to-server / health probes)" time="0">
+    </testcase>
+    <testcase classname="corsOptions rejects all origins when allowedOriginsEnv is empty string" name="corsOptions rejects all origins when allowedOriginsEnv is empty string" time="0.001">
+    </testcase>
+    <testcase classname="corsOptions rejects all browser origins when allowedOriginsEnv is undefined" name="corsOptions rejects all browser origins when allowedOriginsEnv is undefined" time="0">
+    </testcase>
+    <testcase classname="corsOptions trims whitespace around origin entries" name="corsOptions trims whitespace around origin entries" time="0">
+    </testcase>
+    <testcase classname="corsOptions includes credentials: true" name="corsOptions includes credentials: true" time="0">
+    </testcase>
+    <testcase classname="corsOptions exposes X-Request-Id header" name="corsOptions exposes X-Request-Id header" time="0">
+    </testcase>
+    <testcase classname="corsOptions includes standard HTTP methods" name="corsOptions includes standard HTTP methods" time="0.001">
+    </testcase>
+    <testcase classname="corsOptions includes Authorization in allowedHeaders" name="corsOptions includes Authorization in allowedHeaders" time="0">
+    </testcase>
+    <testcase classname="corsOptions sets maxAge to 86400 (24h preflight cache)" name="corsOptions sets maxAge to 86400 (24h preflight cache)" time="0.001">
+    </testcase>
+    <testcase classname="corsOptions does not allow a prefix-matched subdomain attack" name="corsOptions does not allow a prefix-matched subdomain attack" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="validateEnv" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="2.52" tests="32">
+    <testcase classname="validateEnv happy path returns a fully typed config object for a valid env" name="validateEnv happy path returns a fully typed config object for a valid env" time="0.069">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts production as NODE_ENV" name="validateEnv happy path accepts production as NODE_ENV" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts test as NODE_ENV" name="validateEnv happy path accepts test as NODE_ENV" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_BASE_URL when provided" name="validateEnv happy path includes optional API_CENTER_BASE_URL when provided" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_API_KEY when provided" name="validateEnv happy path includes optional API_CENTER_API_KEY when provided" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path omits API_CENTER_BASE_URL from result when not set" name="validateEnv happy path omits API_CENTER_BASE_URL from result when not set" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv happy path defaults ENABLE_SWAGGER to &quot;false&quot; when not set" name="validateEnv happy path defaults ENABLE_SWAGGER to &quot;false&quot; when not set" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv happy path uses the provided ENABLE_SWAGGER value when set" name="validateEnv happy path uses the provided ENABLE_SWAGGER value when set" time="0.006">
+    </testcase>
+    <testcase classname="validateEnv happy path trims leading/trailing whitespace from string values" name="validateEnv happy path trims leading/trailing whitespace from string values" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws for an invalid NODE_ENV value" name="validateEnv NODE_ENV validation throws for an invalid NODE_ENV value" time="0.022">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws when NODE_ENV is missing" name="validateEnv NODE_ENV validation throws when NODE_ENV is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws when NODE_ENV is an empty string" name="validateEnv NODE_ENV validation throws when NODE_ENV is an empty string" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is missing" name="validateEnv PORT validation throws when PORT is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is zero" name="validateEnv PORT validation throws when PORT is zero" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is above 65535" name="validateEnv PORT validation throws when PORT is above 65535" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is not a number" name="validateEnv PORT validation throws when PORT is not a number" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv PORT validation accepts PORT at boundary value 1" name="validateEnv PORT validation accepts PORT at boundary value 1" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv PORT validation accepts PORT at boundary value 65535" name="validateEnv PORT validation accepts PORT at boundary value 65535" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is missing" name="validateEnv required string fields throws when SUPABASE_URL is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is an empty string" name="validateEnv required string fields throws when SUPABASE_URL is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is whitespace only" name="validateEnv required string fields throws when SUPABASE_URL is whitespace only" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is missing" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is an empty string" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is an empty string" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is whitespace only" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is whitespace only" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is missing" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is an empty string" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is an empty string" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is whitespace only" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is whitespace only" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is missing" name="validateEnv required string fields throws when ALLOWED_ORIGINS is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is an empty string" name="validateEnv required string fields throws when ALLOWED_ORIGINS is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is whitespace only" name="validateEnv required string fields throws when ALLOWED_ORIGINS is whitespace only" time="0">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings does not throw when API_CENTER_BASE_URL is missing" name="validateEnv optional field warnings does not throw when API_CENTER_BASE_URL is missing" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings does not throw when API_CENTER_API_KEY is missing" name="validateEnv optional field warnings does not throw when API_CENTER_API_KEY is missing" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="CorrelationIdMiddleware" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="3.499" tests="12">
+    <testcase classname="CorrelationIdMiddleware should be defined" name="CorrelationIdMiddleware should be defined" time="0.011">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is present and valid attaches the sanitized id to req.correlationId" name="CorrelationIdMiddleware when x-correlation-id header is present and valid attaches the sanitized id to req.correlationId" time="0.002">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is present and valid echoes the id in the X-Correlation-ID response header" name="CorrelationIdMiddleware when x-correlation-id header is present and valid echoes the id in the X-Correlation-ID response header" time="0.002">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is present and valid calls next()" name="CorrelationIdMiddleware when x-correlation-id header is present and valid calls next()" time="0">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is absent generates a UUID and assigns it to req.correlationId" name="CorrelationIdMiddleware when x-correlation-id header is absent generates a UUID and assigns it to req.correlationId" time="0.003">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is absent sets the generated id in the X-Correlation-ID response header" name="CorrelationIdMiddleware when x-correlation-id header is absent sets the generated id in the X-Correlation-ID response header" time="0.001">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware when x-correlation-id header is absent calls next()" name="CorrelationIdMiddleware when x-correlation-id header is absent calls next()" time="0.001">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware sanitization strips characters outside alphanumeric, hyphen, and underscore" name="CorrelationIdMiddleware sanitization strips characters outside alphanumeric, hyphen, and underscore" time="0.001">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware sanitization truncates ids longer than 128 characters to exactly 128" name="CorrelationIdMiddleware sanitization truncates ids longer than 128 characters to exactly 128" time="0.001">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware sanitization falls back to a generated UUID when the sanitized result is empty" name="CorrelationIdMiddleware sanitization falls back to a generated UUID when the sanitized result is empty" time="0.001">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware sanitization accepts a valid UUID as-is" name="CorrelationIdMiddleware sanitization accepts a valid UUID as-is" time="0">
+    </testcase>
+    <testcase classname="CorrelationIdMiddleware sanitization handles an array-valued header by falling back to a new UUID" name="CorrelationIdMiddleware sanitization handles an array-valued header by falling back to a new UUID" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AllExceptionsFilter" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="4.227" tests="14">
+    <testcase classname="AllExceptionsFilter HttpException handling returns the correct HTTP status code from an HttpException" name="AllExceptionsFilter HttpException handling returns the correct HTTP status code from an HttpException" time="0.021">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling serialises a string HttpException response correctly" name="AllExceptionsFilter HttpException handling serialises a string HttpException response correctly" time="0.006">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling serialises an object HttpException response — string message field" name="AllExceptionsFilter HttpException handling serialises an object HttpException response — string message field" time="0.002">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling joins array message fields with a semicolon" name="AllExceptionsFilter HttpException handling joins array message fields with a semicolon" time="0.001">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling includes the request path in the error envelope" name="AllExceptionsFilter HttpException handling includes the request path in the error envelope" time="0.001">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling includes a timestamp in the error envelope" name="AllExceptionsFilter HttpException handling includes a timestamp in the error envelope" time="0.002">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling reads correlationId from req.correlationId when present" name="AllExceptionsFilter HttpException handling reads correlationId from req.correlationId when present" time="0.001">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling falls back to x-correlation-id header when req.correlationId is absent" name="AllExceptionsFilter HttpException handling falls back to x-correlation-id header when req.correlationId is absent" time="0.001">
+    </testcase>
+    <testcase classname="AllExceptionsFilter HttpException handling sets correlationId to null when neither source is present" name="AllExceptionsFilter HttpException handling sets correlationId to null when neither source is present" time="0.002">
+    </testcase>
+    <testcase classname="AllExceptionsFilter non-HttpException handling returns 500 for a plain Error" name="AllExceptionsFilter non-HttpException handling returns 500 for a plain Error" time="0.017">
+    </testcase>
+    <testcase classname="AllExceptionsFilter non-HttpException handling returns &quot;Internal Server Error&quot; message for any unhandled exception" name="AllExceptionsFilter non-HttpException handling returns &quot;Internal Server Error&quot; message for any unhandled exception" time="0.002">
+    </testcase>
+    <testcase classname="AllExceptionsFilter non-HttpException handling handles a non-Error thrown value (string)" name="AllExceptionsFilter non-HttpException handling handles a non-Error thrown value (string)" time="0.001">
+    </testcase>
+    <testcase classname="AllExceptionsFilter non-HttpException handling does not leak error details in production mode" name="AllExceptionsFilter non-HttpException handling does not leak error details in production mode" time="0">
+    </testcase>
+    <testcase classname="AllExceptionsFilter non-HttpException handling returns 500 status code in production mode" name="AllExceptionsFilter non-HttpException handling returns 500 status code in production mode" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="AppService" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.128" tests="4">
+    <testcase classname="AppService should be defined" name="AppService should be defined" time="0.042">
+    </testcase>
+    <testcase classname="AppService getServiceInfo returns the correct service name" name="AppService getServiceInfo returns the correct service name" time="0.015">
+    </testcase>
+    <testcase classname="AppService getServiceInfo returns the correct version" name="AppService getServiceInfo returns the correct version" time="0.025">
+    </testcase>
+    <testcase classname="AppService getServiceInfo returns an object with both service and version keys" name="AppService getServiceInfo returns an object with both service and version keys" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="AppController" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.182" tests="1">
+    <testcase classname="AppController root should return service info" name="AppController root should return service info" time="0.097">
+    </testcase>
+  </testsuite>
+  <testsuite name="SupabaseService" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.734" tests="10">
+    <testcase classname="SupabaseService onModuleInit / getClient should be defined" name="SupabaseService onModuleInit / getClient should be defined" time="0.043">
+    </testcase>
+    <testcase classname="SupabaseService onModuleInit / getClient creates a Supabase client when both URL and key are provided" name="SupabaseService onModuleInit / getClient creates a Supabase client when both URL and key are provided" time="0.006">
+    </testcase>
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when URL is missing" name="SupabaseService onModuleInit / getClient leaves client null when URL is missing" time="0.005">
+    </testcase>
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when key is missing" name="SupabaseService onModuleInit / getClient leaves client null when key is missing" time="0.003">
+    </testcase>
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when both URL and key are missing" name="SupabaseService onModuleInit / getClient leaves client null when both URL and key are missing" time="0.005">
+    </testcase>
+    <testcase classname="SupabaseService ping() returns false immediately when client is null" name="SupabaseService ping() returns false immediately when client is null" time="0.004">
+    </testcase>
+    <testcase classname="SupabaseService ping() returns true when listUsers resolves without error" name="SupabaseService ping() returns true when listUsers resolves without error" time="0.01">
+    </testcase>
+    <testcase classname="SupabaseService ping() returns false when listUsers resolves with an error object" name="SupabaseService ping() returns false when listUsers resolves with an error object" time="0.004">
+    </testcase>
+    <testcase classname="SupabaseService ping() returns false when listUsers throws" name="SupabaseService ping() returns false when listUsers throws" time="0.006">
+    </testcase>
+    <testcase classname="SupabaseService ping() returns false when the 3-second timeout fires before listUsers resolves" name="SupabaseService ping() returns false when the 3-second timeout fires before listUsers resolves" time="0.008">
+    </testcase>
+  </testsuite>
+  <testsuite name="HealthController" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.842" tests="4">
+    <testcase classname="HealthController should be defined" name="HealthController should be defined" time="0.033">
+    </testcase>
+    <testcase classname="HealthController returns 200 with ok payload when both checks pass" name="HealthController returns 200 with ok payload when both checks pass" time="0.007">
+    </testcase>
+    <testcase classname="HealthController returns 200 with degraded payload when one check fails" name="HealthController returns 200 with degraded payload when one check fails" time="0.004">
+    </testcase>
+    <testcase classname="HealthController throws HttpException 503 when both checks fail" name="HealthController throws HttpException 503 when both checks fail" time="0.015">
+    </testcase>
+  </testsuite>
+  <testsuite name="HealthService" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.85" tests="5">
+    <testcase classname="HealthService should be defined" name="HealthService should be defined" time="0.036">
+    </testcase>
+    <testcase classname="HealthService returns ok when both checks pass" name="HealthService returns ok when both checks pass" time="0.006">
+    </testcase>
+    <testcase classname="HealthService returns degraded when database fails but apiCenter passes" name="HealthService returns degraded when database fails but apiCenter passes" time="0.004">
+    </testcase>
+    <testcase classname="HealthService returns degraded when apiCenter fails but database passes" name="HealthService returns degraded when apiCenter fails but database passes" time="0.005">
+    </testcase>
+    <testcase classname="HealthService returns error when both checks fail" name="HealthService returns error when both checks fail" time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="ApiCenterSdkService" errors="0" failures="0" skipped="0" timestamp="2026-03-31T17:30:38" time="5.877" tests="12">
+    <testcase classname="ApiCenterSdkService constructor should be defined when baseURL is set" name="ApiCenterSdkService constructor should be defined when baseURL is set" time="0.034">
+    </testcase>
+    <testcase classname="ApiCenterSdkService constructor should be defined when baseURL is not set (graceful degradation)" name="ApiCenterSdkService constructor should be defined when baseURL is not set (graceful degradation)" time="0.006">
+    </testcase>
+    <testcase classname="ApiCenterSdkService constructor initialises client without auth header when apiKey is not set" name="ApiCenterSdkService constructor initialises client without auth header when apiKey is not set" time="0.004">
+    </testcase>
+    <testcase classname="ApiCenterSdkService ping() returns false when client is not initialised (no baseURL)" name="ApiCenterSdkService ping() returns false when client is not initialised (no baseURL)" time="0.004">
+    </testcase>
+    <testcase classname="ApiCenterSdkService ping() returns true when /health GET succeeds" name="ApiCenterSdkService ping() returns true when /health GET succeeds" time="0.007">
+    </testcase>
+    <testcase classname="ApiCenterSdkService ping() returns false when /health GET throws" name="ApiCenterSdkService ping() returns false when /health GET throws" time="0.004">
+    </testcase>
+    <testcase classname="ApiCenterSdkService get() returns data and correlationId from response" name="ApiCenterSdkService get() returns data and correlationId from response" time="0.006">
+    </testcase>
+    <testcase classname="ApiCenterSdkService get() returns null correlationId when header is absent" name="ApiCenterSdkService get() returns null correlationId when header is absent" time="0.003">
+    </testcase>
+    <testcase classname="ApiCenterSdkService get() throws when client is not initialised" name="ApiCenterSdkService get() throws when client is not initialised" time="0.019">
+    </testcase>
+    <testcase classname="ApiCenterSdkService post() returns data and correlationId from response" name="ApiCenterSdkService post() returns data and correlationId from response" time="0.004">
+    </testcase>
+    <testcase classname="ApiCenterSdkService post() returns null correlationId when header is absent" name="ApiCenterSdkService post() returns null correlationId when header is absent" time="0.004">
+    </testcase>
+    <testcase classname="ApiCenterSdkService post() throws when client is not initialised" name="ApiCenterSdkService post() throws when client is not initialised" time="0.003">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -16,8 +16,11 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return service info', () => {
+      expect(appController.getServiceInfo()).toEqual({
+        service: 'tribe-backend',
+        version: '1.0.0',
+      });
     });
   });
 });
