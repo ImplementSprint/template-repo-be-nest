@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./tests/e2e/jest-e2e.json",
-    "migrate:check": "echo 'Supabase managed schema — no local migrations to validate'"
+    "migrate:check": "echo 'Supabase managed schema — no local migrations to validate'",
+    "dummy:show": "node ./scripts/show-dummy-account.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
