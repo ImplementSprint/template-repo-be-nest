@@ -9,7 +9,7 @@ export const options = {
 const baseUrl = __ENV.K6_BASE_URL || 'http://localhost:3000';
 
 export default function smokeTest() {
-  const response = http.get(`${baseUrl}/api/health`);
+  const response = http.get(`${baseUrl}/api/v1/health`);
 
   check(response, {
     'health status is 200': (res) => res.status === 200,

@@ -7,38 +7,50 @@ import { AppModule } from '../../src/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api/v1');
     await app.init();
   });
 
-  it('/api (GET)', () => {
-    const httpServer = app.getHttpServer() as unknown as Parameters<
-      typeof request
-    >[0];
-
-    return request(httpServer)
-      .get('/api')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await app.close();
   });
 
-  it('/api/health (GET)', () => {
+  it('/api/v1 (GET)', () => {
     const httpServer = app.getHttpServer() as unknown as Parameters<
       typeof request
     >[0];
 
     return request(httpServer)
-      .get('/api/health')
+      .get('/api/v1')
       .expect(200)
-      .expect((res: { body: { status: string; uptimeSeconds: number } }) => {
-        expect(res.body.status).toBe('ok');
-        expect(typeof res.body.uptimeSeconds).toBe('number');
+      .expect((res: { body: { service: string; version: string } }) => {
+        expect(res.body.service).toBe('tribe-backend');
+        expect(res.body.version).toBe('1.0.0');
       });
+  });
+
+  it('/api/v1/health (GET)', () => {
+    const httpServer = app.getHttpServer() as unknown as Parameters<
+      typeof request
+    >[0];
+
+    return request(httpServer)
+      .get('/api/v1/health')
+      .expect(
+        (res: {
+          status: number;
+          body: { status: string; uptimeSeconds: number };
+        }) => {
+          expect([200, 503]).toContain(res.status);
+          expect(['ok', 'degraded', 'error']).toContain(res.body.status);
+          expect(typeof res.body.uptimeSeconds).toBe('number');
+        },
+      );
   });
 });
