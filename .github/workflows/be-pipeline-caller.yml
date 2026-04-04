@@ -3,8 +3,6 @@ name: "BE Pipeline Caller"
 on:
   push:
     branches: [test, uat, main]
-  pull_request:
-    branches: [test, uat, main]
   workflow_dispatch:
     inputs:
       pipeline_mode:

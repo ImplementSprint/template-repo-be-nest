@@ -185,7 +185,7 @@ Schema management is handled in the Supabase dashboard or via the Supabase CLI.
 test → uat → main
 ```
 
-Push or open a PR to any of these branches to trigger the pipeline. Successful `test` builds automatically create a PR to `uat`. Successful `uat` builds create a PR to `main`, but only when all required quality gates pass.
+Push to any of these branches to trigger the pipeline. Successful `test` builds automatically create a PR to `uat`. Successful `uat` builds create a PR to `main`, but only when all required quality gates pass.
 
 ### Required GitHub Repository Setup
 
