@@ -3,8 +3,6 @@ name: "BE Pipeline Caller"
 on:
   push:
     branches: [test, uat, main]
-  pull_request:
-    branches: [test, uat, main]
   workflow_dispatch:
     inputs:
       pipeline_mode:
@@ -18,10 +16,6 @@ on:
         default: true
       enable_sonar:
         description: "Run SonarCloud analysis"
-        type: boolean
-        default: true
-      enable_db_migration:
-        description: "Validate DB migrations"
         type: boolean
         default: true
       enable_k6:
@@ -39,7 +33,7 @@ on:
       k6_run_only_on_branch:
         description: "Allowed branches for k6"
         type: string
-        default: "test,uat"
+        default: "test,main"
       run_deploy:
         description: "Enable deployment"
         type: boolean
@@ -68,10 +62,10 @@ permissions:
   pull-requests: write
   id-token: write
 
-# Cancel in-progress runs for the same branch to avoid redundant pipeline executions
+# Queue runs per branch/event so each push executes fully (no auto-cancel)
 concurrency:
-  group: backend-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  group: backend-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   call-backend-orchestrator:
@@ -82,12 +76,11 @@ jobs:
       pipeline_mode: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pipeline_mode || 'auto' }}
       enable_security_scan: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.enable_security_scan || 'true') || true }}
       enable_sonar: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.enable_sonar || 'true') || true }}
-      enable_db_migration: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.enable_db_migration || 'true') || true }}
       enable_k6: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.enable_k6 || 'true') || true }}
       k6_script_path: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_script_path || 'tests/performance' }}
       k6_base_url: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_base_url || '' }}
-      k6_run_only_on_branch: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_run_only_on_branch || 'test,uat' }}
-      run_deploy: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_deploy || 'true') || github.event_name == 'pull_request' }}
+      k6_run_only_on_branch: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_run_only_on_branch || 'test,main' }}
+      run_deploy: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_deploy || 'true') || github.event_name == 'push' }}
       run_promotion: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_promotion || 'true') || github.event_name == 'push' }}
       dry_run: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.dry_run || 'false') || false }}
     secrets: inherit
