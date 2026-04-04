@@ -185,7 +185,7 @@ Schema management is handled in the Supabase dashboard or via the Supabase CLI.
 test → uat → main
 ```
 
-Push or open a PR to any of these branches to trigger the pipeline. Successful `test` builds automatically create a PR to `uat`. Successful `uat` builds create a PR to `main`.
+Push or open a PR to any of these branches to trigger the pipeline. Successful `test` builds automatically create a PR to `uat`. Successful `uat` builds create a PR to `main`, but only when all required quality gates pass.
 
 ### Required GitHub Repository Setup
 
@@ -205,6 +205,8 @@ Before the first pipeline run, configure these in your GitHub repository:
 | `SONAR_ORGANIZATION` | SonarCloud organization slug |
 | `SONAR_PROJECT_KEY` | Unique SonarCloud project key for this tribe |
 | `GH_PR_TOKEN` | Token with PR write permissions for auto-promotion |
+| `K6_CLOUD_TOKEN` | Grafana Cloud token for k6 execution |
+| `K6_CLOUD_PROJECT_ID` | Grafana Cloud project ID for k6 execution |
 
 ### Pipeline Stages
 
@@ -215,8 +217,8 @@ Before the first pipeline run, configure these in your GitHub repository:
 5. **Deploy** — staging deploy on `test` and `uat` branches
 6. **Replit deploy** — preview deploy on `test` and production deploy on `main`
 7. **Versioning** — semantic version tag per branch
-8. **Promotion** — auto-creates PR to next branch on success
-9. **k6 smoke test** — runs on `test` and `uat` branches against the deployed URL
+8. **k6 smoke test** — runs after Replit deploy on `test` and `main` branches
+9. **Promotion** — auto-creates PR to next branch only when all required gates pass (tests, security, SonarCloud, Grafana k6)
 
 ---
 
