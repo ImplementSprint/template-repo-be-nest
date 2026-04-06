@@ -54,7 +54,7 @@ on:
 #   packages: write        — docker-build-main pushes Docker image to GHCR
 #   security-events: write — docker-build-main uploads Trivy results to GitHub Security
 #   pull-requests: write   — pr-to-uat and pr-to-main jobs create promotion PRs
-#   id-token: write        — required if any job uses OIDC-based cloud auth
+#   id-token: write        — required if any job uses OIDC-based cloud authantication
 permissions:
   contents: write
   packages: write
