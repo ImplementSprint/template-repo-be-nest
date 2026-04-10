@@ -81,9 +81,10 @@ jobs:
       k6_base_url: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_base_url || '' }}
       k6_run_only_on_branch: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.k6_run_only_on_branch || 'test,main' }}
       # Default push behavior:
-      # - test/main: rely on Replit GitHub auto-deploy (no webhook call from CI)
-      # - uat: keep central staging deploy lane enabled
-      run_deploy: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_deploy || 'false') || (github.event_name == 'push' && github.ref_name == 'uat') }}
+      # - push (test/uat/main): keep central deploy lanes visible
+      # - Replit lane decides webhook vs verify-only mode in reusable workflow
+      # - workflow_dispatch keeps manual run_deploy toggle
+      run_deploy: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_deploy || 'false') || github.event_name == 'push' }}
       run_promotion: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.run_promotion || 'true') || github.event_name == 'push' }}
       dry_run: ${{ github.event_name == 'workflow_dispatch' && fromJSON(github.event.inputs.dry_run || 'false') || false }}
     secrets: inherit

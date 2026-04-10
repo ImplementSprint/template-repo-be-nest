@@ -29,7 +29,7 @@ This backend does not run alone. It sits in a wider system:
 [ImplementSprint/central-workflow]
     |
     |-- quality gates, sonar, docker, k6, promotion
-  |-- optional replit webhook lane (manual/legacy)
+  |-- replit lane on test/main (webhook or verify-only)
 
 [Your Tribe Backend Runtime]
     |
@@ -108,7 +108,10 @@ Required for default pipeline behavior:
 
 Optional:
 
-- REPLIT_DEPLOY_URL (only if using webhook-based Replit deploy from CI)
+- REPLIT_HEALTHCHECK_URL_TEST (recommended for test verify-only mode)
+- REPLIT_HEALTHCHECK_URL_PROD (recommended for production verify-only mode)
+- REPLIT_HEALTHCHECK_URL (optional fallback health URL)
+- REPLIT_DEPLOY_URL (optional; enables webhook-trigger mode)
 - REPLIT_API_KEY (currently optional/unused by deploy curl path)
 
 ### 4.3 Runtime Secrets (Replit or Cluster Secret Store)
@@ -262,11 +265,15 @@ Without platform registration and allowlist, calls will be denied.
 - main branch: Replit production via branch auto-deploy
 - uat branch: Kubernetes deploy path (not Replit)
 
-### 8.2 Optional for Replit webhook mode
+### 8.2 CI mode selection for Replit lane
 
-- GitHub secret REPLIT_DEPLOY_URL must exist
-
-If missing, reusable replit deploy job fails hard when webhook mode is enabled.
+- Auto mode (default):
+  - Uses webhook when REPLIT_DEPLOY_URL exists
+  - Uses verify-only mode when webhook is absent
+- Verify-only mode requires a reachable health URL from one of:
+  - REPLIT_HEALTHCHECK_URL_TEST (test)
+  - REPLIT_HEALTHCHECK_URL_PROD (main/production)
+  - REPLIT_HEALTHCHECK_URL (fallback)
 
 ### 8.3 Runtime setup on Replit
 
@@ -286,13 +293,14 @@ Typical order:
 2. Security scan
 3. SonarCloud analysis
 4. Docker build (main lane)
-5. Deployment lanes (staging on uat by default; optional webhook lane when enabled)
+5. Deployment lanes (staging on uat; Replit lane on test/main with webhook-or-verify mode)
 6. k6 smoke lane (branch/policy dependent)
 7. Promotion PR automation (test -> uat -> main)
 
 Important:
 
-- run_deploy defaults to uat-only behavior on push in caller config.
+- run_deploy defaults to enabled for push in caller config.
+- Replit lane remains branch-gated to test/main by central workflow policy.
 - dry_run mainly impacts manual dispatch scenarios.
 
 ## 10) Feature Development Pattern For New Teams
