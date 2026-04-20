@@ -33,6 +33,9 @@ export interface EnvironmentVariables {
   ALLOWED_ORIGINS: string;
   API_CENTER_BASE_URL?: string;
   API_CENTER_API_KEY?: string;
+  API_CENTER_TRIBE_ID?: string;
+  API_CENTER_TRIBE_SECRET?: string;
+  API_CENTER_TIMEOUT_MS?: string;
 }
 
 type RawEnv = Record<string, unknown>;
@@ -139,8 +142,49 @@ export function validateEnv(env: RawEnv): EnvironmentVariables {
     'APICenter requests will be unauthenticated. Set this together with API_CENTER_BASE_URL.',
   );
 
+  const apiCenterTribeId = env['API_CENTER_TRIBE_ID'];
+  const apiCenterTribeSecret = env['API_CENTER_TRIBE_SECRET'];
+
+  if (
+    typeof apiCenterTribeId === 'string' &&
+    apiCenterTribeId.trim() !== '' &&
+    (typeof apiCenterTribeSecret !== 'string' ||
+      apiCenterTribeSecret.trim() === '')
+  ) {
+    console.warn(
+      '[env] WARNING: API_CENTER_TRIBE_ID is set but API_CENTER_TRIBE_SECRET is missing. Tribe token flow will not work.',
+    );
+  }
+
+  if (
+    typeof apiCenterTribeSecret === 'string' &&
+    apiCenterTribeSecret.trim() !== '' &&
+    (typeof apiCenterTribeId !== 'string' || apiCenterTribeId.trim() === '')
+  ) {
+    console.warn(
+      '[env] WARNING: API_CENTER_TRIBE_SECRET is set but API_CENTER_TRIBE_ID is missing. Tribe token flow will not work.',
+    );
+  }
+
+  const timeoutRaw = env['API_CENTER_TIMEOUT_MS'];
+  if (typeof timeoutRaw === 'string' && timeoutRaw.trim() !== '') {
+    const parsed = Number(timeoutRaw.trim());
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      throw new Error(
+        `[env] API_CENTER_TIMEOUT_MS must be a positive number when set. Got: '${timeoutRaw}'.`,
+      );
+    }
+  }
+
   const API_CENTER_BASE_URL = env['API_CENTER_BASE_URL'] as string | undefined;
   const API_CENTER_API_KEY = env['API_CENTER_API_KEY'] as string | undefined;
+  const API_CENTER_TRIBE_ID = env['API_CENTER_TRIBE_ID'] as string | undefined;
+  const API_CENTER_TRIBE_SECRET = env['API_CENTER_TRIBE_SECRET'] as
+    | string
+    | undefined;
+  const API_CENTER_TIMEOUT_MS = env['API_CENTER_TIMEOUT_MS'] as
+    | string
+    | undefined;
 
   return {
     NODE_ENV,
@@ -152,5 +196,8 @@ export function validateEnv(env: RawEnv): EnvironmentVariables {
     ALLOWED_ORIGINS,
     ...(API_CENTER_BASE_URL ? { API_CENTER_BASE_URL } : {}),
     ...(API_CENTER_API_KEY ? { API_CENTER_API_KEY } : {}),
+    ...(API_CENTER_TRIBE_ID ? { API_CENTER_TRIBE_ID } : {}),
+    ...(API_CENTER_TRIBE_SECRET ? { API_CENTER_TRIBE_SECRET } : {}),
+    ...(API_CENTER_TIMEOUT_MS ? { API_CENTER_TIMEOUT_MS } : {}),
   };
 }

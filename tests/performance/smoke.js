@@ -6,7 +6,7 @@ export const options = {
   iterations: 1,
 };
 
-const baseUrl = __ENV.K6_BASE_URL || 'http://localhost:3000';
+const baseUrl = __ENV.BASE_URL || __ENV.K6_BASE_URL || 'http://localhost:3000';
 
 export default function smokeTest() {
   const response = http.get(`${baseUrl}/api/v1/health`);

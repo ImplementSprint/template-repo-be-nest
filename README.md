@@ -2,6 +2,8 @@
 
 Reusable NestJS 11 backend template for ImplementSprint tribes. Each tribe clones this repository as their backend service. It comes pre-wired with Supabase, the API Center SDK, security middleware, CI/CD, and Docker — ready to extend with tribe-specific feature modules.
 
+Start with `START_HERE_BACKEND.md` for a full onboarding and system-level explanation.
+
 ---
 
 ## What This Template Provides
@@ -70,13 +72,16 @@ Copy `.env.example` to `.env` and fill in real values. Never commit `.env`.
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key — bypasses RLS, store in Vault/Secrets |
 | `ALLOWED_ORIGINS` | Yes | Comma-separated CORS origins (e.g. `http://localhost:5173`) |
 | `API_CENTER_BASE_URL` | Optional | API Center gateway URL — SDK warns and disables if absent |
-| `API_CENTER_API_KEY` | Optional | Bearer token for API Center authentication |
+| `API_CENTER_TRIBE_ID` | Optional | Preferred APICenter auth mode: registered tribe/service id |
+| `API_CENTER_TRIBE_SECRET` | Optional | Preferred APICenter auth mode: secret paired with `API_CENTER_TRIBE_ID` |
+| `API_CENTER_API_KEY` | Optional | Legacy static bearer token mode (fallback) |
+| `API_CENTER_TIMEOUT_MS` | Optional | APICenter HTTP timeout in ms (default `10000`) |
 
-`SUPABASE_SERVICE_ROLE_KEY` and `API_CENTER_API_KEY` are **HIGH sensitivity** — store them in GitHub Secrets or Vault, never in plaintext files committed to version control.
+`SUPABASE_SERVICE_ROLE_KEY`, `API_CENTER_TRIBE_SECRET`, and `API_CENTER_API_KEY` are **HIGH sensitivity** — store them in GitHub Secrets or Vault, never in plaintext files committed to version control.
 
-### Strict Env Validation (opt-in)
+### Strict Env Validation
 
-`src/common/config/env.validation.ts` provides a `validateEnv` function that can be passed to `ConfigModule.forRoot({ validate: validateEnv })` to enforce all required variables at startup. It is commented out by default in `app.module.ts` to avoid breaking local development without a complete `.env`. Enable it in production deployments.
+`src/common/config/env.validation.ts` is enforced automatically when `NODE_ENV=production`, which makes production-grade deployments fail fast on missing required configuration. Non-production runs keep local developer flexibility.
 
 ---
 
@@ -91,7 +96,7 @@ src/
   common/
     config/
       security.config.ts            CISO-owned: Helmet options, CORS factory, body size limit
-      env.validation.ts             Strict env var validation (opt-in)
+      env.validation.ts             Strict env var validation (enabled in production)
     filters/
       all-exceptions.filter.ts      Global exception filter — structured error envelope
     middleware/
@@ -146,6 +151,11 @@ The Docker container healthcheck targets this endpoint.
 
 The `ApiCenterSdkService` is the authorized channel for calling the shared API gateway. Any feature module can inject it:
 
+- Preferred auth mode: `API_CENTER_TRIBE_ID` + `API_CENTER_TRIBE_SECRET` (short-lived token lifecycle)
+- Legacy fallback mode: `API_CENTER_API_KEY` (static bearer token)
+- Paths for APICenter namespaces (`/tribes`, `/shared`, `/external`, `/auth`, `/registry`, `/health`) are normalized to `/api/v1/...` automatically
+- Typed Kafka helpers are available: `kafkaListClusters()`, `kafkaListTopics(clusterId)`, `kafkaProduceRecords(clusterId, topic, records)`, and `buildTenantTopic(tribeId, suffix)`
+
 ```typescript
 constructor(private readonly sdkService: ApiCenterSdkService) {}
 
@@ -154,6 +164,15 @@ const { data, correlationId } = await this.sdkService.get<User[]>('/tribes/tribe
 
 // Consume a shared external service registered in the API Center
 const { data } = await this.sdkService.get('/shared/payments/invoice/123');
+
+// Kafka through APICenter external routing
+const topic = ApiCenterSdkService.buildTenantTopic('orders-service', 'order-created');
+await this.sdkService.kafkaProduceRecords('lkc-123', topic, [
+  {
+    key: 'order-001',
+    value: JSON.stringify({ orderId: 'order-001', status: 'created' }),
+  },
+]);
 ```
 
 If `API_CENTER_BASE_URL` is not set, the service logs a warning at startup and all calls throw — it does not crash the application.
@@ -207,6 +226,14 @@ Before the first pipeline run, configure these in your GitHub repository:
 | `GH_PR_TOKEN` | Token with PR write permissions for auto-promotion |
 | `K6_CLOUD_TOKEN` | Grafana Cloud token for k6 execution |
 | `K6_CLOUD_PROJECT_ID` | Grafana Cloud project ID for k6 execution |
+| `RENDER_DEPLOY_HOOK_URL_TEST` | Required for `test` branch Render deployments |
+| `RENDER_DEPLOY_HOOK_URL_UAT` | Required for `uat` branch Render deployments |
+| `RENDER_DEPLOY_HOOK_URL_MAIN` | Required for `main` branch Render deployments |
+| `RENDER_HEALTHCHECK_URL_TEST` | Required health URL for `test` branch verification |
+| `RENDER_HEALTHCHECK_URL_UAT` | Required health URL for `uat` branch verification |
+| `RENDER_HEALTHCHECK_URL_MAIN` | Required health URL for `main` branch verification |
+| `RENDER_DEPLOY_HOOK_URL` | Optional fallback deploy hook URL if branch-specific secret is omitted |
+| `RENDER_HEALTHCHECK_URL` | Optional fallback health URL if branch-specific secret is omitted |
 
 ### Pipeline Stages
 
@@ -214,36 +241,49 @@ Before the first pipeline run, configure these in your GitHub repository:
 2. **Security scan** — `npm audit` + license compliance check
 3. **SonarCloud** — static analysis (requires secrets above)
 4. **Docker build** — multi-stage build + Trivy vulnerability scan (main branch only)
-5. **Deploy** — staging deploy on `test` and `uat` branches
-6. **Replit deploy** — preview deploy on `test` and production deploy on `main`
+5. **Deploy lanes (central reusable pipeline)**
+  - `deploy-preview` on `test`/`uat` (staging lane)
+  - `render-deploy` on `test`/`uat`/`main` (deploy hook + health verification)
+6. **k6 smoke test** — runs on configured branches after deploy lanes
 7. **Versioning** — semantic version tag per branch
-8. **k6 smoke test** — runs after Replit deploy on `test` and `main` branches
-9. **Promotion** — auto-creates PR to next branch only when all required gates pass (tests, security, SonarCloud, Grafana k6)
+8. **Promotion** — auto-creates PR to next branch when required quality gates pass
+  - branch mapping: `test` -> test, `uat` -> uat, `main` -> main
+  - deployment passes only when health endpoint returns `checks.apiCenter=true`
 
 ---
 
-## Replit (Pre-Production Preview)
+## Render Deployment (Test/UAT/Main)
 
-Replit is used for preview deployments on the `test` branch and production deployment on the `main` branch. UAT uses Kubernetes.
+This template now uses Render for backend deployments through the central reusable backend pipeline.
 
-### Files added
+### Deployment behavior
 
-| File | Purpose |
-|------|---------|
-| `.replit` | Workspace config: Node 22 module, build + start command, port mapping |
-| `replit.nix` | Nix environment: provisions Node.js 22 LTS |
+1. The caller workflow delegates deployment to `master-pipeline-be.yml` and keeps deploy lanes enabled on push.
+2. The central `render-deploy` reusable lane runs on `test`, `uat`, and `main` branches.
+3. The lane triggers the branch-specific Render deploy hook.
+4. The lane polls the configured health endpoint and requires `checks.apiCenter=true` before passing.
 
 ### Setup
 
-1. Import the repository into Replit (Import from GitHub)
-2. Open **Tools > Secrets** and add all required env vars (do NOT create a `.env` file — see `.env.example` for the full list)
-3. Set `ALLOWED_ORIGINS` to your Replit preview URL: `https://<repl-name>.<username>.repl.co`
-4. Set `NODE_ENV=production` and `ENABLE_SWAGGER=false`
-5. Click **Run** — Replit will execute `npm run build && npm run start:prod`
+1. Create Render services/environments for `test`, `uat`, and `main` deployment targets.
+2. Add deploy hooks in GitHub secrets:
+  - `RENDER_DEPLOY_HOOK_URL_TEST`
+  - `RENDER_DEPLOY_HOOK_URL_UAT`
+  - `RENDER_DEPLOY_HOOK_URL_MAIN`
+3. Add health URLs in GitHub secrets:
+  - `RENDER_HEALTHCHECK_URL_TEST`
+  - `RENDER_HEALTHCHECK_URL_UAT`
+  - `RENDER_HEALTHCHECK_URL_MAIN`
+4. Optional fallbacks:
+  - `RENDER_DEPLOY_HOOK_URL`
+  - `RENDER_HEALTHCHECK_URL`
+5. Configure Render runtime environment variables (same set as `.env.example`).
+6. Set APICenter auth mode:
+  - Preferred: `API_CENTER_TRIBE_ID` + `API_CENTER_TRIBE_SECRET`
+  - Legacy fallback: `API_CENTER_API_KEY`
+7. Set `NODE_ENV=production` and `ENABLE_SWAGGER=false` in Render.
 
-The app binds to `0.0.0.0:3000` so Replit's reverse proxy can reach it. The health endpoint at `/api/v1/health` is available for Replit's health monitor.
-
-> **CORS note:** The CORS factory uses exact-match whitelisting — wildcards are not accepted. Set `ALLOWED_ORIGINS` to the exact Replit preview URL for your repl.
+> **CORS note:** The CORS factory uses exact-match whitelisting. Set `ALLOWED_ORIGINS` to your exact frontend URLs for each environment.
 
 ---
 
@@ -290,4 +330,4 @@ If your tribe already has the NestJS backend, bring these layers across:
 4. **Update `app.module.ts`** — import `ConfigModule`, `SupabaseModule`, `ApiCenterSdkModule`, apply `CorrelationIdMiddleware`
 5. **Replace the CI caller** — use `.github/workflows/be-pipeline-caller.yml` from this template
 6. **Configure GitHub** — set the repository variables and secrets listed above
-7. **Set your `.env`** — Supabase credentials, API Center URL and key, CORS origins
+7. **Set your `.env`** — Supabase credentials, API Center URL, tribe credentials (or legacy key fallback), and CORS origins

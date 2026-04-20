@@ -60,6 +60,23 @@ describe('validateEnv', () => {
       expect(result.API_CENTER_API_KEY).toBe('secret-key');
     });
 
+    it('includes optional API_CENTER_TRIBE_ID and API_CENTER_TRIBE_SECRET when provided', () => {
+      const result = validateEnv(
+        validEnv({
+          API_CENTER_TRIBE_ID: 'tribe-a',
+          API_CENTER_TRIBE_SECRET: 'tribe-secret',
+        }),
+      );
+
+      expect(result.API_CENTER_TRIBE_ID).toBe('tribe-a');
+      expect(result.API_CENTER_TRIBE_SECRET).toBe('tribe-secret');
+    });
+
+    it('includes optional API_CENTER_TIMEOUT_MS when provided', () => {
+      const result = validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: '8000' }));
+      expect(result.API_CENTER_TIMEOUT_MS).toBe('8000');
+    });
+
     it('omits API_CENTER_BASE_URL from result when not set', () => {
       const result = validateEnv(validEnv());
       expect(result.API_CENTER_BASE_URL).toBeUndefined();
@@ -169,6 +186,18 @@ describe('validateEnv', () => {
       expect(() =>
         validateEnv(validEnv({ API_CENTER_BASE_URL: 'http://api-center.local' })),
       ).not.toThrow();
+    });
+
+    it('throws when API_CENTER_TIMEOUT_MS is invalid', () => {
+      expect(() => validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: 'abc' }))).toThrow(
+        /API_CENTER_TIMEOUT_MS/,
+      );
+    });
+
+    it('throws when API_CENTER_TIMEOUT_MS is zero', () => {
+      expect(() => validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: '0' }))).toThrow(
+        /API_CENTER_TIMEOUT_MS/,
+      );
     });
   });
 });

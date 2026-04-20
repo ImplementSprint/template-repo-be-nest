@@ -121,10 +121,12 @@ export const helmetConfigSwagger = {
  *      that could be bypassed with evil.example.com tricks).
  */
 export function corsOptions(allowedOriginsEnv?: string): CorsOptions {
-  const whitelist = (allowedOriginsEnv ?? '')
-    .split(',')
-    .map((o) => o.trim())
-    .filter(Boolean);
+  const whitelist = new Set(
+    (allowedOriginsEnv ?? '')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
+  );
 
   return {
     origin: (
@@ -147,15 +149,20 @@ export function corsOptions(allowedOriginsEnv?: string): CorsOptions {
         return;
       }
 
-      if (whitelist.includes(requestOrigin)) {
+      if (whitelist.has(requestOrigin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS: origin '${requestOrigin}' is not allowed`));
       }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
-    exposedHeaders: ['X-Request-Id'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Correlation-ID',
+      'X-Request-Id',
+    ],
+    exposedHeaders: ['X-Correlation-ID', 'X-Request-Id'],
     credentials: true,
     maxAge: 86400, // 24 h preflight cache
   };
