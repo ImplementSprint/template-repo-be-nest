@@ -34,6 +34,10 @@ function makeConfigService(
       if (key === 'API_CENTER_TRIBE_ID') return tribeId;
       if (key === 'API_CENTER_TRIBE_SECRET') return tribeSecret;
       if (key === 'API_CENTER_TIMEOUT_MS') return timeoutMs;
+      if (key === 'APICENTER_URL') return baseURL;
+      if (key === 'APICENTER_TRIBE_ID') return tribeId;
+      if (key === 'APICENTER_TRIBE_SECRET') return tribeSecret;
+      if (key === 'APICENTER_TIMEOUT_MS') return timeoutMs;
       return undefined;
     }),
   };
@@ -408,6 +412,100 @@ describe('ApiCenterSdkService', () => {
       );
 
       expect(topic).toBe('tribe.payments-service.order-created');
+    });
+
+    it('kafkaGetGovernanceCatalog calls governance endpoint', async () => {
+      const service = await createService({
+        baseURL: 'http://api-center.local',
+        apiKey: 'key-abc',
+      });
+
+      const getSpy = jest.spyOn(service, 'get').mockResolvedValue({
+        data: { topics: [] },
+        correlationId: null,
+      });
+
+      await service.kafkaGetGovernanceCatalog();
+
+      expect(getSpy).toHaveBeenCalledWith('/kafka/governance');
+    });
+
+    it('kafkaPublish posts to governance publish endpoint', async () => {
+      const service = await createService({
+        baseURL: 'http://api-center.local',
+        apiKey: 'key-abc',
+      });
+
+      const postSpy = jest.spyOn(service, 'post').mockResolvedValue({
+        data: { success: true },
+        correlationId: null,
+      });
+
+      await service.kafkaPublish({ topic: 'tribe.a.test' });
+
+      expect(postSpy).toHaveBeenCalledWith('/kafka/publish', {
+        topic: 'tribe.a.test',
+      });
+    });
+  });
+
+  describe('shared service wrappers', () => {
+    it('payment wrapper methods match contract paths', async () => {
+      const service = await createService({
+        baseURL: 'http://api-center.local',
+        apiKey: 'key-abc',
+      });
+
+      const postSpy = jest.spyOn(service, 'post').mockResolvedValue({
+        data: { ok: true },
+        correlationId: null,
+      });
+      const getSpy = jest.spyOn(service, 'get').mockResolvedValue({
+        data: { ok: true },
+        correlationId: null,
+      });
+
+      await service.paymentCreateCheckoutSession({ amount: 1000 });
+      await service.paymentGetCheckoutSession('sess_123');
+      await service.paymentCreateRefund('pay_123', { amount: 500 });
+
+      expect(postSpy).toHaveBeenCalledWith('/shared/payment/checkout/sessions', {
+        amount: 1000,
+      });
+      expect(getSpy).toHaveBeenCalledWith('/shared/payment/checkout/sessions/sess_123');
+      expect(postSpy).toHaveBeenCalledWith('/shared/payment/payments/pay_123/refunds', {
+        amount: 500,
+      });
+    });
+
+    it('email and sms wrapper methods match contract paths', async () => {
+      const service = await createService({
+        baseURL: 'http://api-center.local',
+        apiKey: 'key-abc',
+      });
+
+      const postSpy = jest.spyOn(service, 'post').mockResolvedValue({
+        data: { ok: true },
+        correlationId: null,
+      });
+      const getSpy = jest.spyOn(service, 'get').mockResolvedValue({
+        data: { ok: true },
+        correlationId: null,
+      });
+
+      await service.emailSend({ to: 'a@example.com' });
+      await service.emailGetStatus('msg_1');
+      await service.smsSend({ to: '+1234567890' });
+      await service.smsGetStatus('sms_1');
+
+      expect(postSpy).toHaveBeenCalledWith('/shared/email/send', {
+        to: 'a@example.com',
+      });
+      expect(getSpy).toHaveBeenCalledWith('/shared/email/status/msg_1');
+      expect(postSpy).toHaveBeenCalledWith('/shared/sms/send', {
+        to: '+1234567890',
+      });
+      expect(getSpy).toHaveBeenCalledWith('/shared/sms/status/sms_1');
     });
   });
 });

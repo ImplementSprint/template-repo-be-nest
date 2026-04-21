@@ -1,45 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="20" failures="0" errors="0" time="1.55">
-  <testsuite name="ApiCenterSdkService" errors="0" failures="0" skipped="0" timestamp="2026-04-10T12:56:40" time="1.208" tests="20">
-    <testcase classname="ApiCenterSdkService constructor should be defined when baseURL is set" name="ApiCenterSdkService constructor should be defined when baseURL is set" time="0.013">
+<testsuites name="jest tests" tests="61" failures="0" errors="0" time="1.822">
+  <testsuite name="SupabaseService" errors="0" failures="0" skipped="0" timestamp="2026-04-21T16:37:02" time="1.105" tests="18">
+    <testcase classname="SupabaseService onModuleInit / getClient should be defined" name="SupabaseService onModuleInit / getClient should be defined" time="0.032">
     </testcase>
-    <testcase classname="ApiCenterSdkService constructor should be defined when baseURL is not set (graceful degradation)" name="ApiCenterSdkService constructor should be defined when baseURL is not set (graceful degradation)" time="0.003">
+    <testcase classname="SupabaseService onModuleInit / getClient creates a Supabase client when both URL and key are provided" name="SupabaseService onModuleInit / getClient creates a Supabase client when both URL and key are provided" time="0.007">
     </testcase>
-    <testcase classname="ApiCenterSdkService constructor initialises client without auth header when apiKey is not set" name="ApiCenterSdkService constructor initialises client without auth header when apiKey is not set" time="0.001">
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when URL is missing" name="SupabaseService onModuleInit / getClient leaves client null when URL is missing" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService ping() returns false when client is not initialised (no baseURL)" name="ApiCenterSdkService ping() returns false when client is not initialised (no baseURL)" time="0.001">
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when key is missing" name="SupabaseService onModuleInit / getClient leaves client null when key is missing" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService ping() returns true when /api/v1/health/ready GET succeeds" name="ApiCenterSdkService ping() returns true when /api/v1/health/ready GET succeeds" time="0.003">
+    <testcase classname="SupabaseService onModuleInit / getClient leaves client null when both URL and key are missing" name="SupabaseService onModuleInit / getClient leaves client null when both URL and key are missing" time="0.001">
     </testcase>
-    <testcase classname="ApiCenterSdkService ping() falls back to /api/v1/health/live when ready endpoint is missing" name="ApiCenterSdkService ping() falls back to /api/v1/health/live when ready endpoint is missing" time="0.002">
+    <testcase classname="SupabaseService onModuleInit / getClient creates scoped clients for tribe service env pairs" name="SupabaseService onModuleInit / getClient creates scoped clients for tribe service env pairs" time="0.004">
     </testcase>
-    <testcase classname="ApiCenterSdkService ping() returns false when all health endpoints fail" name="ApiCenterSdkService ping() returns false when all health endpoints fail" time="0.002">
+    <testcase classname="SupabaseService onModuleInit / getClient supports scoped _SUPABASE_SERVICE_ROLE_KEY suffix" name="SupabaseService onModuleInit / getClient supports scoped _SUPABASE_SERVICE_ROLE_KEY suffix" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService ping() authenticates with tribe credentials before health probe" name="ApiCenterSdkService ping() authenticates with tribe credentials before health probe" time="0.002">
+    <testcase classname="SupabaseService onModuleInit / getClient ignores incomplete scoped service config" name="SupabaseService onModuleInit / getClient ignores incomplete scoped service config" time="0.001">
     </testcase>
-    <testcase classname="ApiCenterSdkService get() normalizes APICenter path and returns data/correlationId from response headers" name="ApiCenterSdkService get() normalizes APICenter path and returns data/correlationId from response headers" time="0.002">
+    <testcase classname="SupabaseService onModuleInit / getClient returns null for unknown service client" name="SupabaseService onModuleInit / getClient returns null for unknown service client" time="0.003">
     </testcase>
-    <testcase classname="ApiCenterSdkService get() unwraps APICenter success envelope and falls back to meta correlationId" name="ApiCenterSdkService get() unwraps APICenter success envelope and falls back to meta correlationId" time="0.002">
+    <testcase classname="SupabaseService ping() returns false immediately when client is null" name="SupabaseService ping() returns false immediately when client is null" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService get() uses tribe credentials to mint APICenter token when configured" name="ApiCenterSdkService get() uses tribe credentials to mint APICenter token when configured" time="0.002">
+    <testcase classname="SupabaseService ping() returns true when listUsers resolves without error" name="SupabaseService ping() returns true when listUsers resolves without error" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService get() throws when client is not initialised" name="ApiCenterSdkService get() throws when client is not initialised" time="0.016">
+    <testcase classname="SupabaseService ping() returns false when listUsers resolves with an error object" name="SupabaseService ping() returns false when listUsers resolves with an error object" time="0.001">
     </testcase>
-    <testcase classname="ApiCenterSdkService post() normalizes APICenter path and returns data/correlationId from response" name="ApiCenterSdkService post() normalizes APICenter path and returns data/correlationId from response" time="0.002">
+    <testcase classname="SupabaseService ping() returns false when listUsers throws" name="SupabaseService ping() returns false when listUsers throws" time="0.001">
     </testcase>
-    <testcase classname="ApiCenterSdkService post() unwraps APICenter success envelope in POST response" name="ApiCenterSdkService post() unwraps APICenter success envelope in POST response" time="0.001">
+    <testcase classname="SupabaseService ping() returns false when the 3-second timeout fires before listUsers resolves" name="SupabaseService ping() returns false when the 3-second timeout fires before listUsers resolves" time="0.003">
     </testcase>
-    <testcase classname="ApiCenterSdkService post() throws when client is not initialised" name="ApiCenterSdkService post() throws when client is not initialised" time="0.002">
+    <testcase classname="SupabaseService ping() pings a scoped service client when service name is provided" name="SupabaseService ping() pings a scoped service client when service name is provided" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService post() does not retry failed POST requests" name="ApiCenterSdkService post() does not retry failed POST requests" time="0.005">
+    <testcase classname="SupabaseService ping() returns false when scoped service client is missing" name="SupabaseService ping() returns false when scoped service client is missing" time="0.001">
     </testcase>
-    <testcase classname="ApiCenterSdkService kafka helpers kafkaListClusters calls the APICenter external clusters path" name="ApiCenterSdkService kafka helpers kafkaListClusters calls the APICenter external clusters path" time="0.002">
+    <testcase classname="SupabaseService getDefaultOrServiceClient() returns default client when service name is not provided" name="SupabaseService getDefaultOrServiceClient() returns default client when service name is not provided" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService kafka helpers kafkaListTopics URL-encodes cluster id" name="ApiCenterSdkService kafka helpers kafkaListTopics URL-encodes cluster id" time="0.002">
+    <testcase classname="SupabaseService getDefaultOrServiceClient() returns scoped client when service is provided" name="SupabaseService getDefaultOrServiceClient() returns scoped client when service is provided" time="0.002">
     </testcase>
-    <testcase classname="ApiCenterSdkService kafka helpers kafkaProduceRecords URL-encodes path segments and sends records envelope" name="ApiCenterSdkService kafka helpers kafkaProduceRecords URL-encodes path segments and sends records envelope" time="0.006">
+  </testsuite>
+  <testsuite name="validateEnv" errors="0" failures="0" skipped="0" timestamp="2026-04-21T16:37:03" time="0.262" tests="43">
+    <testcase classname="validateEnv happy path returns a fully typed config object for a valid env" name="validateEnv happy path returns a fully typed config object for a valid env" time="0.026">
     </testcase>
-    <testcase classname="ApiCenterSdkService kafka helpers buildTenantTopic normalizes tribe id and suffix" name="ApiCenterSdkService kafka helpers buildTenantTopic normalizes tribe id and suffix" time="0.001">
+    <testcase classname="validateEnv happy path accepts production as NODE_ENV" name="validateEnv happy path accepts production as NODE_ENV" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts test as NODE_ENV" name="validateEnv happy path accepts test as NODE_ENV" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_BASE_URL when provided" name="validateEnv happy path includes optional API_CENTER_BASE_URL when provided" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_API_KEY when provided" name="validateEnv happy path includes optional API_CENTER_API_KEY when provided" time="0">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_TRIBE_ID and API_CENTER_TRIBE_SECRET when provided" name="validateEnv happy path includes optional API_CENTER_TRIBE_ID and API_CENTER_TRIBE_SECRET when provided" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path includes optional API_CENTER_TIMEOUT_MS when provided" name="validateEnv happy path includes optional API_CENTER_TIMEOUT_MS when provided" time="0">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts APICENTER_* aliases" name="validateEnv happy path accepts APICENTER_* aliases" time="0">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts scoped Supabase-only config without default SUPABASE_* trio" name="validateEnv happy path accepts scoped Supabase-only config without default SUPABASE_* trio" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path accepts incomplete default SUPABASE_* when scoped clients are configured" name="validateEnv happy path accepts incomplete default SUPABASE_* when scoped clients are configured" time="0.005">
+    </testcase>
+    <testcase classname="validateEnv happy path omits API_CENTER_BASE_URL from result when not set" name="validateEnv happy path omits API_CENTER_BASE_URL from result when not set" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path defaults ENABLE_SWAGGER to &quot;false&quot; when not set" name="validateEnv happy path defaults ENABLE_SWAGGER to &quot;false&quot; when not set" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path uses the provided ENABLE_SWAGGER value when set" name="validateEnv happy path uses the provided ENABLE_SWAGGER value when set" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv happy path trims leading/trailing whitespace from string values" name="validateEnv happy path trims leading/trailing whitespace from string values" time="0">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws for an invalid NODE_ENV value" name="validateEnv NODE_ENV validation throws for an invalid NODE_ENV value" time="0.013">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws when NODE_ENV is missing" name="validateEnv NODE_ENV validation throws when NODE_ENV is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv NODE_ENV validation throws when NODE_ENV is an empty string" name="validateEnv NODE_ENV validation throws when NODE_ENV is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is missing" name="validateEnv PORT validation throws when PORT is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is zero" name="validateEnv PORT validation throws when PORT is zero" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is above 65535" name="validateEnv PORT validation throws when PORT is above 65535" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation throws when PORT is not a number" name="validateEnv PORT validation throws when PORT is not a number" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv PORT validation accepts PORT at boundary value 1" name="validateEnv PORT validation accepts PORT at boundary value 1" time="0">
+    </testcase>
+    <testcase classname="validateEnv PORT validation accepts PORT at boundary value 65535" name="validateEnv PORT validation accepts PORT at boundary value 65535" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is missing" name="validateEnv required string fields throws when SUPABASE_URL is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is an empty string" name="validateEnv required string fields throws when SUPABASE_URL is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_URL is whitespace only" name="validateEnv required string fields throws when SUPABASE_URL is whitespace only" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is missing" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is an empty string" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_ANON_KEY is whitespace only" name="validateEnv required string fields throws when SUPABASE_ANON_KEY is whitespace only" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is missing" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is an empty string" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is whitespace only" name="validateEnv required string fields throws when SUPABASE_SERVICE_ROLE_KEY is whitespace only" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is missing" name="validateEnv required string fields throws when ALLOWED_ORIGINS is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is an empty string" name="validateEnv required string fields throws when ALLOWED_ORIGINS is an empty string" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv required string fields throws when ALLOWED_ORIGINS is whitespace only" name="validateEnv required string fields throws when ALLOWED_ORIGINS is whitespace only" time="0">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings does not throw when API_CENTER_BASE_URL is missing" name="validateEnv optional field warnings does not throw when API_CENTER_BASE_URL is missing" time="0.002">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings does not throw when API_CENTER_API_KEY is missing" name="validateEnv optional field warnings does not throw when API_CENTER_API_KEY is missing" time="0">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings does not throw when only APICENTER_URL alias is set" name="validateEnv optional field warnings does not throw when only APICENTER_URL alias is set" time="0">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings throws when API_CENTER_TIMEOUT_MS is invalid" name="validateEnv optional field warnings throws when API_CENTER_TIMEOUT_MS is invalid" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv optional field warnings throws when API_CENTER_TIMEOUT_MS is zero" name="validateEnv optional field warnings throws when API_CENTER_TIMEOUT_MS is zero" time="0.004">
+    </testcase>
+    <testcase classname="validateEnv production APICenter requirements throws in production when API center base URL is missing" name="validateEnv production APICenter requirements throws in production when API center base URL is missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv production APICenter requirements throws in production when auth variables are missing" name="validateEnv production APICenter requirements throws in production when auth variables are missing" time="0.001">
+    </testcase>
+    <testcase classname="validateEnv production APICenter requirements passes in production with tribe credentials" name="validateEnv production APICenter requirements passes in production with tribe credentials" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>

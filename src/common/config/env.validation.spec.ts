@@ -34,7 +34,14 @@ describe('validateEnv', () => {
     });
 
     it('accepts production as NODE_ENV', () => {
-      const result = validateEnv(validEnv({ NODE_ENV: 'production' }));
+      const result = validateEnv(
+        validEnv({
+          NODE_ENV: 'production',
+          API_CENTER_BASE_URL: 'http://api-center.local',
+          API_CENTER_TRIBE_ID: 'tribe-a',
+          API_CENTER_TRIBE_SECRET: 'tribe-secret',
+        }),
+      );
       expect(result.NODE_ENV).toBe('production');
     });
 
@@ -75,6 +82,52 @@ describe('validateEnv', () => {
     it('includes optional API_CENTER_TIMEOUT_MS when provided', () => {
       const result = validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: '8000' }));
       expect(result.API_CENTER_TIMEOUT_MS).toBe('8000');
+    });
+
+    it('accepts APICENTER_* aliases', () => {
+      const result = validateEnv(
+        validEnv({
+          APICENTER_URL: 'http://api-center.local',
+          APICENTER_TRIBE_ID: 'tribe-a',
+          APICENTER_TRIBE_SECRET: 'tribe-secret',
+          APICENTER_TIMEOUT_MS: '5000',
+        }),
+      );
+
+      expect(result.API_CENTER_BASE_URL).toBe('http://api-center.local');
+      expect(result.API_CENTER_TRIBE_ID).toBe('tribe-a');
+      expect(result.API_CENTER_TRIBE_SECRET).toBe('tribe-secret');
+      expect(result.API_CENTER_TIMEOUT_MS).toBe('5000');
+    });
+
+    it('accepts scoped Supabase-only config without default SUPABASE_* trio', () => {
+      const result = validateEnv(
+        validEnv({
+          SUPABASE_URL: undefined,
+          SUPABASE_ANON_KEY: undefined,
+          SUPABASE_SERVICE_ROLE_KEY: undefined,
+          PAYMENT_SERVICE_SUPABASE_URL: 'https://payment.supabase.co',
+          PAYMENT_SERVICE_SUPABASE_SECRET_KEY: 'payment-secret',
+        }),
+      );
+
+      expect(result.SUPABASE_URL).toBeUndefined();
+      expect(result.SUPABASE_ANON_KEY).toBeUndefined();
+      expect(result.SUPABASE_SERVICE_ROLE_KEY).toBeUndefined();
+    });
+
+    it('accepts incomplete default SUPABASE_* when scoped clients are configured', () => {
+      const result = validateEnv(
+        validEnv({
+          SUPABASE_ANON_KEY: undefined,
+          PAYMENT_SERVICE_SUPABASE_URL: 'https://payment.supabase.co',
+          PAYMENT_SERVICE_SUPABASE_SECRET_KEY: 'payment-secret',
+        }),
+      );
+
+      expect(result.SUPABASE_URL).toBe('https://abc.supabase.co');
+      expect(result.SUPABASE_ANON_KEY).toBeUndefined();
+      expect(result.SUPABASE_SERVICE_ROLE_KEY).toBe('service-role-key');
     });
 
     it('omits API_CENTER_BASE_URL from result when not set', () => {
@@ -188,6 +241,12 @@ describe('validateEnv', () => {
       ).not.toThrow();
     });
 
+    it('does not throw when only APICENTER_URL alias is set', () => {
+      expect(() =>
+        validateEnv(validEnv({ APICENTER_URL: 'http://api-center.local' })),
+      ).not.toThrow();
+    });
+
     it('throws when API_CENTER_TIMEOUT_MS is invalid', () => {
       expect(() => validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: 'abc' }))).toThrow(
         /API_CENTER_TIMEOUT_MS/,
@@ -198,6 +257,44 @@ describe('validateEnv', () => {
       expect(() => validateEnv(validEnv({ API_CENTER_TIMEOUT_MS: '0' }))).toThrow(
         /API_CENTER_TIMEOUT_MS/,
       );
+    });
+  });
+
+  describe('production APICenter requirements', () => {
+    it('throws in production when API center base URL is missing', () => {
+      expect(() =>
+        validateEnv(
+          validEnv({
+            NODE_ENV: 'production',
+            API_CENTER_TRIBE_ID: 'tribe-a',
+            API_CENTER_TRIBE_SECRET: 'tribe-secret',
+          }),
+        ),
+      ).toThrow(/API_CENTER_BASE_URL|APICENTER_URL/);
+    });
+
+    it('throws in production when auth variables are missing', () => {
+      expect(() =>
+        validateEnv(
+          validEnv({
+            NODE_ENV: 'production',
+            API_CENTER_BASE_URL: 'http://api-center.local',
+          }),
+        ),
+      ).toThrow(/Production APICenter auth is missing/);
+    });
+
+    it('passes in production with tribe credentials', () => {
+      expect(() =>
+        validateEnv(
+          validEnv({
+            NODE_ENV: 'production',
+            API_CENTER_BASE_URL: 'http://api-center.local',
+            API_CENTER_TRIBE_ID: 'tribe-a',
+            API_CENTER_TRIBE_SECRET: 'tribe-secret',
+          }),
+        ),
+      ).not.toThrow();
     });
   });
 });
