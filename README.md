@@ -67,15 +67,18 @@ Copy `.env.example` to `.env` and fill in real values. Never commit `.env`.
 | `NODE_ENV` | Yes | `development` / `test` / `production` |
 | `PORT` | Yes | HTTP port (default `3000`) |
 | `ENABLE_SWAGGER` | No | Set `true` in dev to enable Swagger UI at `/api/v1/docs` |
-| `SUPABASE_URL` | Yes | Your Supabase project URL |
-| `SUPABASE_ANON_KEY` | Yes | Supabase anon key (server-side use with RLS) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key — bypasses RLS, store in Vault/Secrets |
+| `SUPABASE_URL` | Conditional | Required for default client mode; optional when using scoped-only clients |
+| `SUPABASE_ANON_KEY` | Conditional | Required for default client mode; optional when using scoped-only clients |
+| `SUPABASE_SERVICE_ROLE_KEY` | Conditional | Required for default client mode; optional when using scoped-only clients |
+| `<SERVICE>_SUPABASE_URL` | Optional | Service-scoped Supabase URL for multi-tribe/microservice access |
+| `<SERVICE>_SUPABASE_SECRET_KEY` | Optional | Service-scoped Supabase service key (paired with `<SERVICE>_SUPABASE_URL`) |
+| `<SERVICE>_SUPABASE_SERVICE_ROLE_KEY` | Optional | Alias for service-scoped secret key |
 | `ALLOWED_ORIGINS` | Yes | Comma-separated CORS origins (e.g. `http://localhost:5173`) |
-| `API_CENTER_BASE_URL` | Optional | API Center gateway URL — SDK warns and disables if absent |
-| `API_CENTER_TRIBE_ID` | Optional | Preferred APICenter auth mode: registered tribe/service id |
-| `API_CENTER_TRIBE_SECRET` | Optional | Preferred APICenter auth mode: secret paired with `API_CENTER_TRIBE_ID` |
-| `API_CENTER_API_KEY` | Optional | Legacy static bearer token mode (fallback) |
-| `API_CENTER_TIMEOUT_MS` | Optional | APICenter HTTP timeout in ms (default `10000`) |
+| `API_CENTER_BASE_URL` | Required in production | API Center gateway URL (alias accepted: `APICENTER_URL`) |
+| `API_CENTER_TRIBE_ID` | Required in production (preferred) | APICenter auth mode: registered tribe/service id (alias accepted: `APICENTER_TRIBE_ID`) |
+| `API_CENTER_TRIBE_SECRET` | Required in production (preferred) | Secret paired with `API_CENTER_TRIBE_ID` (alias accepted: `APICENTER_TRIBE_SECRET`) |
+| `API_CENTER_API_KEY` | Optional (legacy fallback) | Legacy static bearer token mode |
+| `API_CENTER_TIMEOUT_MS` | Optional | APICenter HTTP timeout in ms (default `10000`, alias accepted: `APICENTER_TIMEOUT_MS`) |
 
 `SUPABASE_SERVICE_ROLE_KEY`, `API_CENTER_TRIBE_SECRET`, and `API_CENTER_API_KEY` are **HIGH sensitivity** — store them in GitHub Secrets or Vault, never in plaintext files committed to version control.
 
@@ -152,7 +155,7 @@ The Docker container healthcheck targets this endpoint.
 The `ApiCenterSdkService` is the authorized channel for calling the shared API gateway. Any feature module can inject it:
 
 - Preferred auth mode: `API_CENTER_TRIBE_ID` + `API_CENTER_TRIBE_SECRET` (short-lived token lifecycle)
-- Legacy fallback mode: `API_CENTER_API_KEY` (static bearer token)
+- Legacy fallback mode: `API_CENTER_API_KEY` (deprecated static bearer token)
 - Paths for APICenter namespaces (`/tribes`, `/shared`, `/external`, `/auth`, `/registry`, `/health`) are normalized to `/api/v1/...` automatically
 - Typed Kafka helpers are available: `kafkaListClusters()`, `kafkaListTopics(clusterId)`, `kafkaProduceRecords(clusterId, topic, records)`, and `buildTenantTopic(tribeId, suffix)`
 
@@ -163,7 +166,7 @@ constructor(private readonly sdkService: ApiCenterSdkService) {}
 const { data, correlationId } = await this.sdkService.get<User[]>('/tribes/tribe-b/users');
 
 // Consume a shared external service registered in the API Center
-const { data } = await this.sdkService.get('/shared/payments/invoice/123');
+const { data } = await this.sdkService.get('/shared/payment/invoice/123');
 
 // Kafka through APICenter external routing
 const topic = ApiCenterSdkService.buildTenantTopic('orders-service', 'order-created');
@@ -177,7 +180,7 @@ await this.sdkService.kafkaProduceRecords('lkc-123', topic, [
 
 If `API_CENTER_BASE_URL` is not set, the service logs a warning at startup and all calls throw — it does not crash the application.
 
-**Note:** Service registration (announcing this tribe backend's own APIs to the API Center registry) is not yet automated. See the API Center documentation for the registry registration endpoint.
+Service registration is available through `registerServiceManifest(...)` in `ApiCenterSdkService` for startup registration to `POST /api/v1/registry/register`.
 
 ---
 
@@ -188,9 +191,27 @@ The `SupabaseService` provides a pre-configured Supabase client using the servic
 ```typescript
 constructor(private readonly supabaseService: SupabaseService) {}
 
+// Default client from SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
 const client = this.supabaseService.getClient();
 const { data, error } = await client.from('orders').select('*');
+
+// Service-scoped client from PAYMENT_SERVICE_SUPABASE_URL + PAYMENT_SERVICE_SUPABASE_SECRET_KEY
+const paymentClient = this.supabaseService.getClientForService('payment-service');
+const { data: payments } = await paymentClient.from('invoices').select('*');
 ```
+
+Service-scoped client naming convention:
+
+- `PAYMENT_SERVICE_SUPABASE_URL` + `PAYMENT_SERVICE_SUPABASE_SECRET_KEY`
+- `CHAT_SERVICE_SUPABASE_URL` + `CHAT_SERVICE_SUPABASE_SECRET_KEY`
+- `PROVIDER_SERVICE_SUPABASE_URL` + `PROVIDER_SERVICE_SUPABASE_SECRET_KEY`
+
+`SupabaseService` only activates scoped clients when both URL and secret exist for the same prefix.
+
+Validation mode:
+
+- Default mode: set all of `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- Scoped-only mode: omit default trio and set at least one `<SERVICE>_SUPABASE_URL` + `<SERVICE>_SUPABASE_SECRET_KEY` pair
 
 Schema management is handled in the Supabase dashboard or via the Supabase CLI.
 
@@ -278,9 +299,10 @@ This template now uses Render for backend deployments through the central reusab
   - `RENDER_DEPLOY_HOOK_URL`
   - `RENDER_HEALTHCHECK_URL`
 5. Configure Render runtime environment variables (same set as `.env.example`).
+  - Ensure APICenter values are present in production lanes so `checks.apiCenter=true` health validation passes.
 6. Set APICenter auth mode:
   - Preferred: `API_CENTER_TRIBE_ID` + `API_CENTER_TRIBE_SECRET`
-  - Legacy fallback: `API_CENTER_API_KEY`
+  - Legacy fallback only: `API_CENTER_API_KEY`
 7. Set `NODE_ENV=production` and `ENABLE_SWAGGER=false` in Render.
 
 > **CORS note:** The CORS factory uses exact-match whitelisting. Set `ALLOWED_ORIGINS` to your exact frontend URLs for each environment.

@@ -120,21 +120,23 @@ Optional:
 
 Required runtime variables for production deployments:
 
-- NODE_ENV
+- NODE_ENV=production
 - PORT
-- SUPABASE_URL
-- SUPABASE_ANON_KEY
-- SUPABASE_SERVICE_ROLE_KEY
 - ALLOWED_ORIGINS
+- API_CENTER_BASE_URL (or APICENTER_URL alias)
+- API_CENTER_TRIBE_ID + API_CENTER_TRIBE_SECRET (preferred)
+
+Supabase requirement (choose one mode):
+
+- Default mode: SUPABASE_URL + SUPABASE_ANON_KEY + SUPABASE_SERVICE_ROLE_KEY
+- Scoped-only mode: at least one <SERVICE>_SUPABASE_URL + <SERVICE>_SUPABASE_SECRET_KEY pair
 
 Optional runtime variables:
 
 - ENABLE_SWAGGER
-- API_CENTER_BASE_URL
-- API_CENTER_TRIBE_ID
-- API_CENTER_TRIBE_SECRET
-- API_CENTER_API_KEY (legacy fallback)
+- API_CENTER_API_KEY (legacy fallback only)
 - API_CENTER_TIMEOUT_MS
+- APICENTER_TIMEOUT_MS (alias)
 
 For local development, non-production runs are more permissive because strict env validation is only enforced when NODE_ENV=production.
 
@@ -209,7 +211,7 @@ Migration path:
 1. Provision tribe credentials in APICenter.
 2. Set API_CENTER_TRIBE_ID and API_CENTER_TRIBE_SECRET.
 3. Validate calls and token refresh behavior.
-4. Remove API_CENTER_API_KEY.
+4. Remove API_CENTER_API_KEY where possible.
 
 ## 7) Kafka Through APICenter (Recommended Pattern)
 

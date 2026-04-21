@@ -17,6 +17,20 @@ export interface KafkaProduceRecord {
   headers?: Record<string, string>;
 }
 
+export interface RegistryRegistrationPayload {
+  serviceId: string;
+  name: string;
+  baseUrl: string;
+  requiredScopes: string[];
+  exposes: string[];
+  consumes?: string[];
+  serviceType?: 'tribe' | 'shared';
+  healthCheck?: string;
+  version?: string;
+  ownerTeam?: string;
+  serviceTier?: 'critical' | 'standard' | 'experimental';
+}
+
 @Injectable()
 export class ApiCenterSdkService {
   private static readonly MAX_RETRIES = 2;
@@ -34,11 +48,16 @@ export class ApiCenterSdkService {
   private tokenExpiresAt = 0;
 
   constructor(private readonly configService: ConfigService) {
-    const baseURL = this.configService.get<string>('API_CENTER_BASE_URL')?.trim();
-    this.apiKey = this.configService.get<string>('API_CENTER_API_KEY')?.trim() ?? null;
-    this.tribeId = this.configService.get<string>('API_CENTER_TRIBE_ID')?.trim() ?? null;
-    this.tribeSecret =
-      this.configService.get<string>('API_CENTER_TRIBE_SECRET')?.trim() ?? null;
+    const baseURL = this.getConfigString(['API_CENTER_BASE_URL', 'APICENTER_URL']);
+    this.apiKey = this.getConfigString(['API_CENTER_API_KEY']);
+    this.tribeId = this.getConfigString([
+      'API_CENTER_TRIBE_ID',
+      'APICENTER_TRIBE_ID',
+    ]);
+    this.tribeSecret = this.getConfigString([
+      'API_CENTER_TRIBE_SECRET',
+      'APICENTER_TRIBE_SECRET',
+    ]);
 
     if (!baseURL) {
       this.logger.warn(
@@ -126,6 +145,66 @@ export class ApiCenterSdkService {
       `/external/kafka/v3/clusters/${encodedClusterId}/topics/${encodedTopic}/records`,
       { records },
     );
+  }
+
+  async kafkaGetGovernanceCatalog<T = unknown>(): Promise<SdkResponse<T>> {
+    return this.get<T>('/kafka/governance');
+  }
+
+  async kafkaPublish<T = unknown>(
+    payload: unknown,
+  ): Promise<SdkResponse<T>> {
+    return this.post<T>('/kafka/publish', payload);
+  }
+
+  async paymentCreateCheckoutSession<T = unknown>(
+    payload: unknown,
+  ): Promise<SdkResponse<T>> {
+    return this.post<T>('/shared/payment/checkout/sessions', payload);
+  }
+
+  async paymentGetCheckoutSession<T = unknown>(
+    checkoutId: string,
+  ): Promise<SdkResponse<T>> {
+    return this.get<T>(
+      `/shared/payment/checkout/sessions/${encodeURIComponent(checkoutId)}`,
+    );
+  }
+
+  async paymentCreateRefund<T = unknown>(
+    paymentId: string,
+    payload: unknown,
+  ): Promise<SdkResponse<T>> {
+    return this.post<T>(
+      `/shared/payment/payments/${encodeURIComponent(paymentId)}/refunds`,
+      payload,
+    );
+  }
+
+  async emailSend<T = unknown>(payload: unknown): Promise<SdkResponse<T>> {
+    return this.post<T>('/shared/email/send', payload);
+  }
+
+  async emailGetStatus<T = unknown>(
+    messageId: string,
+  ): Promise<SdkResponse<T>> {
+    return this.get<T>(`/shared/email/status/${encodeURIComponent(messageId)}`);
+  }
+
+  async smsSend<T = unknown>(payload: unknown): Promise<SdkResponse<T>> {
+    return this.post<T>('/shared/sms/send', payload);
+  }
+
+  async smsGetStatus<T = unknown>(
+    messageId: string,
+  ): Promise<SdkResponse<T>> {
+    return this.get<T>(`/shared/sms/status/${encodeURIComponent(messageId)}`);
+  }
+
+  async registerServiceManifest<T = unknown>(
+    payload: RegistryRegistrationPayload,
+  ): Promise<SdkResponse<T>> {
+    return this.post<T>('/registry/register', payload);
   }
 
   static buildTenantTopic(tribeId: string, suffix: string): string {
@@ -262,7 +341,10 @@ export class ApiCenterSdkService {
   }
 
   private getTimeoutMs(): number {
-    const raw = this.configService.get<string>('API_CENTER_TIMEOUT_MS');
+    const raw = this.getConfigString([
+      'API_CENTER_TIMEOUT_MS',
+      'APICENTER_TIMEOUT_MS',
+    ]);
 
     if (!raw) {
       return 10_000;
@@ -277,6 +359,17 @@ export class ApiCenterSdkService {
     }
 
     return parsed;
+  }
+
+  private getConfigString(keys: string[]): string | null {
+    for (const key of keys) {
+      const value = this.configService.get<string>(key)?.trim();
+      if (value) {
+        return value;
+      }
+    }
+
+    return null;
   }
 
   private usesTribeCredentials(): boolean {
