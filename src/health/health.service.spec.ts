@@ -2,17 +2,15 @@ import { Test } from '@nestjs/testing';
 import type { TestingModule } from '@nestjs/testing';
 import { HealthService } from './health.service.js';
 import { SupabaseService } from '../supabase/supabase.service.js';
-import { ApiCenterSdkService } from '../api-center/api-center-sdk.service.js';
+import { TribeClient } from '@apicenter/sdk';
 
 const makeSupabaseMock = (pingResult: boolean): Partial<SupabaseService> => ({
   ping: jest.fn().mockResolvedValue(pingResult),
 });
 
-const makeApiCenterMock = (
-  pingResult: boolean,
-): Partial<ApiCenterSdkService> => ({
-  ping: jest.fn().mockResolvedValue(pingResult),
-});
+const makeTribeClientMock = (
+  exists: boolean,
+): Partial<TribeClient> | null => exists ? ({} as Partial<TribeClient>) : null;
 
 describe('HealthService', () => {
   async function createService(
@@ -24,8 +22,8 @@ describe('HealthService', () => {
         HealthService,
         { provide: SupabaseService, useValue: makeSupabaseMock(dbPing) },
         {
-          provide: ApiCenterSdkService,
-          useValue: makeApiCenterMock(apiPing),
+          provide: TribeClient,
+          useValue: makeTribeClientMock(apiPing),
         },
       ],
     }).compile();
